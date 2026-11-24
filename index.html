@@ -25,7 +25,7 @@
 
 </main>
 <script>
-const ROOT='http://127.0.0.1:8787/api/v1/';
+const ROOT='/api/v1/';
 const $=id=>document.getElementById(id),rows=$('rows'),status=$('status'),summary=$('summary');
 let readings=new Map(),visibleOrder=[],controller=null,scanning=false,order='coin',descending=false,nextPermit=0,drawTimer=null,refreshing=new Set(),refreshControllers=new Map(),autoVolumeBusy=false,autoVolumeStopped=false,volumeController=new AbortController();
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
