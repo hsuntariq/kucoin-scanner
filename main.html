@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Crypto RSI Scanner</title>
+<style>
+:root{color-scheme:dark;--bg:#0a1020;--panel:#151d31;--edge:#28334d;--text:#f4f7fd;--muted:#9aaac5;--accent:#8f80ff}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 88% -5%,#252353,var(--bg) 42%);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,sans-serif}main{max-width:none;margin:auto;padding:8px 10px}h1{font-size:clamp(29px,4vw,44px);letter-spacing:-.04em;margin:0 0 8px}p{color:var(--muted);line-height:1.5;margin:0}.eyebrow{color:#b5aaff;letter-spacing:.18em;text-transform:uppercase;font-size:11px;font-weight:800;margin-bottom:12px}.intro{margin-bottom:27px}.toolbar{display:flex;align-items:end;gap:7px;flex-wrap:wrap;margin-bottom:6px}.control{display:grid;gap:3px;font-size:11px;color:var(--muted);font-weight:700}.control input,.control select{min-width:0;max-width:190px;background:var(--panel);border:1px solid var(--edge);border-radius:7px;padding:6px 8px;color:var(--text);font:inherit;font-size:13px;outline:none}.control input:focus,.control select:focus{border-color:var(--accent)}button{background:var(--accent);color:#fff;border:0;border-radius:7px;padding:7px 10px;font:inherit;font-size:12px;font-weight:700;cursor:pointer}button.secondary{background:#2b3552}button:hover{filter:brightness(1.12)}button:disabled{opacity:.55;cursor:default}.statusbar{display:flex;gap:12px;justify-content:space-between;flex-wrap:wrap;color:var(--muted);font-size:12px;margin:5px 0}.progress{height:5px;background:#27314a;border-radius:100px;overflow:hidden;margin-bottom:6px}.progress>div{height:100%;width:0;background:linear-gradient(90deg,#7469ed,#60ddc4);transition:width .2s}.card{border:1px solid var(--edge);background:#151d31ee;border-radius:17px;overflow:auto;height:calc(100dvh - 105px);min-height:300px;scrollbar-gutter:stable;box-shadow:0 18px 50px #0003}table{border-collapse:collapse;width:100%;min-width:1900px}th{position:sticky;top:0;z-index:2;background:#1a243b;text-align:left;padding:18px 16px;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.1em}td{padding:15px 16px;border-top:1px solid #29324a}.coin{font-weight:800}.pair{color:var(--muted);display:block;font-size:12px;margin-top:3px}.num{font-size:20px;font-weight:750;font-variant-numeric:tabular-nums}.pill{display:inline-block;padding:6px 9px;border-radius:30px;font-size:11px;font-weight:750;margin-left:9px}.high{color:#ffaaa9;background:#59303f}.low{color:#7ce3b8;background:#275447}.neutral{color:#c9d4ea;background:#384359}.empty{text-align:center;color:var(--muted);padding:38px!important}.note{margin-top:17px;font-size:12px;color:var(--muted);line-height:1.6}.note a{color:#baaefe}.error{color:#ffaaaa}.sort{background:none;color:var(--muted);padding:0;font-size:11px;text-transform:uppercase;letter-spacing:.1em}.sort:hover{color:#fff}.direction,.volume{display:flex;flex-direction:column;align-items:flex-start;gap:6px}.trend{display:inline-flex;gap:5px;align-items:center;border-radius:8px;padding:6px 8px;font-size:12px;font-weight:750;white-space:nowrap}.trend.up{color:#7ce3b8;background:#275447}.trend.down{color:#ffaaa9;background:#59303f}.trend.flat{color:#c9d4ea;background:#384359}.trend svg{width:14px;height:14px;flex:none}.coin-cell{display:flex;align-items:center;gap:10px}.coin-icon{width:32px;height:32px;display:grid;place-items:center;border-radius:50%;background:#554da0;color:#fff;font-size:14px;font-weight:800;flex:none}.price{font-weight:750;font-variant-numeric:tabular-nums;white-space:nowrap}
+.spark{width:138px;display:flex;flex-direction:column;gap:3px}.spark svg{display:block;width:138px;height:42px}.spark .gain{color:#7ce3b8}.spark .loss{color:#ffaaa9}.spark .unchanged{color:#c9d4ea}.spark-label{font-size:12px;font-weight:750;font-variant-numeric:tabular-nums}
+.levels{display:flex;flex-direction:column;align-items:flex-start;gap:5px;white-space:nowrap;font-size:12px;font-weight:700}.levels .upper{color:#ffaaa9}.levels .lower{color:#7ce3b8}
+.candle-progress{min-width:250px;display:grid;gap:9px}.candle-line{display:grid;grid-template-columns:30px minmax(88px,1fr) auto;align-items:center;gap:6px;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}.candle-track{height:15px;border:1px solid #46506a;border-radius:7px;background:#27314a;overflow:hidden}.candle-fill{display:block;height:100%;width:0;background:linear-gradient(90deg,#7469ed,#60ddc4)}.candle-scale{display:grid;grid-template-columns:repeat(4,1fr);margin-left:36px;margin-right:100px;color:var(--muted);font-size:9px;text-align:right}.candle-value{color:#aeead9;text-align:right;min-width:94px;white-space:nowrap}.refresh-coin{background:#2b3552;padding:5px 8px;margin-top:5px;font-size:11px}.refresh-coin:disabled{opacity:.5}.view-coin{display:inline-block;background:#2b3552;color:#fff;text-decoration:none;border-radius:6px;padding:5px 8px;margin:5px 0 0 5px;font-size:11px;font-weight:700}.card::-webkit-scrollbar{width:11px;height:12px}.card::-webkit-scrollbar-thumb{background:#697696;border-radius:8px}.card::-webkit-scrollbar-track{background:#202a43}
+.control input[type=number]{width:74px}.control select{width:170px}@media(max-width:650px){.card{height:calc(100dvh - 150px)}main{padding:6px}}
+</style>
+</head>
+<body><main>
+<div class="toolbar">
+<label class="control">Minimum RSI<input type="number" id="minimum" min="0" max="100" step="0.1" value="50"></label>
+<label class="control">Maximum RSI<input type="number" id="maximum" min="0" max="100" step="0.1" value="100"></label>
+<label class="control">Match timeframe<select id="match"><option value="both">Both 30m and 1h</option><option value="30m">30m only</option><option value="1h">1h only</option><option value="either">Either timeframe</option></select></label>
+
+<button id="scan">Scan all coins</button><button class="secondary" id="stop" disabled>Stop</button>
+</div>
+<div class="statusbar"><span id="status" aria-live="polite">Ready to scan</span><span id="summary">—</span></div><div class="progress"><div id="progress"></div></div>
+<div class="card"><table><thead><tr><th>Coin</th><th><button class="sort" data-sort="price">Price (USDT) ↕</button></th><th>72h chart</th><th>24h chart</th><th><button class="sort" data-sort="1d">24-hour RSI ↕</button></th><th><button class="sort" data-sort="1h">1-hour RSI ↕</button></th><th><button class="sort" data-sort="30m">30-minute RSI ↕</button></th><th>RSI direction</th><th>Market direction</th><th>Volume change</th><th title="Current KuCoin spot volume divided by the highest volume among recent completed equal UTC periods (3 daily, 24 hourly, or 24 half-hour periods). Updates on fresh volume, capped at 99% while open.">Volume progress</th><th>As of</th></tr></thead><tbody id="rows"><tr><td colspan="12" class="empty">The scan will start automatically.</td></tr></tbody></table></div>
+
+</main>
+<script>
+const ROOT='http://127.0.0.1:8787/api/v1/';
+const $=id=>document.getElementById(id),rows=$('rows'),status=$('status'),summary=$('summary');
+let readings=new Map(),visibleOrder=[],controller=null,scanning=false,order='coin',descending=false,nextPermit=0,drawTimer=null,refreshing=new Set(),refreshControllers=new Map(),autoVolumeBusy=false,autoVolumeStopped=false,volumeController=new AbortController();
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+function rsi(closes,period=14){
+  if(closes.length<period+1||closes.some(x=>!Number.isFinite(x)))return null;
+  let gain=0,loss=0;
+  for(let i=1;i<=period;i++){const d=closes[i]-closes[i-1];gain+=Math.max(d,0);loss+=Math.max(-d,0)}
+  gain/=period;loss/=period;
+  for(let i=period+1;i<closes.length;i++){const d=closes[i]-closes[i-1];gain=(gain*(period-1)+Math.max(d,0))/period;loss=(loss*(period-1)+Math.max(-d,0))/period}
+  return loss===0?(gain===0?50:100):100-100/(1+gain/loss);
+}
+function criteria(){const min=Number($('minimum').value),max=Number($('maximum').value);return Number.isFinite(min)&&Number.isFinite(max)&&min>=0&&max<=100&&min<=max?{min,max,mode:$('match').value}:null}
+function matches(item,c){const check=v=>Number.isFinite(v)&&v>=c.min&&v<=c.max;const a=check(item['30m']),b=check(item['1h']);return c.mode==='both'?a&&b:c.mode==='either'?a||b:c.mode==='30m'?a:b}
+function badge(v){if(!Number.isFinite(v))return '<span class="pair">Unavailable</span>';const kind=v>=70?'high':v<=30?'low':'neutral';return `<span class="num">${v.toFixed(1)}</span><span class="pill ${kind}">${kind==='high'?'Overbought':kind==='low'?'Oversold':'Neutral'}</span>`}
+function trendBadge(item,interval){const current=item[interval],previous=item['previous'+interval];if(!Number.isFinite(current)||!Number.isFinite(previous))return `<span class="trend flat">${interval} —</span>`;const change=current-previous,kind=change>0.05?'up':change< -0.05?'down':'flat';const label=kind==='up'?'↑ Rising':kind==='down'?'↓ Falling':'→ Flat';return `<span class="trend ${kind}" title="Previous RSI: ${previous.toFixed(2)}">${interval} ${label} (${change>=0?'+':''}${change.toFixed(1)})</span>`}
+const ICONS={
+  up:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14 14 4M7 4h7v7"/></svg>',
+  down:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 6 10 10m0-7v7H7"/></svg>',
+  flat:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M3 10h14"/></svg>'
+};
+function compact(v){if(!Number.isFinite(v))return '—';for(const [size,suffix] of [[1e12,'T'],[1e9,'B'],[1e6,'M'],[1e3,'K']])if(v>=size)return (v/size).toLocaleString(undefined,{maximumFractionDigits:2})+suffix;return v.toLocaleString(undefined,{maximumFractionDigits:v<1?8:2})}
+function volumeNumber(v){return Number.isFinite(v)?v.toLocaleString(undefined,{maximumFractionDigits:v<1?8:4}):'—'}
+function priceText(v){if(!Number.isFinite(v))return '—';const digits=v>=1?Math.min(4,Math.max(2,4-Math.floor(Math.log10(v)))):Math.min(10,Math.max(4,3-Math.floor(Math.log10(v))));return '$'+v.toLocaleString(undefined,{maximumFractionDigits:digits})}
+function volumeBadge(item,interval){const volume=item['volume'+interval],previous=item['olderVolume'+interval];if(!Number.isFinite(volume)||!Number.isFinite(previous))return `<span class="trend flat">${interval} —</span>`;const change=previous===0?(volume===0?0:null):(volume-previous)/previous*100;const kind=change===null?'flat':change>0.01?'up':change< -0.01?'down':'flat';const percent=change===null?'new':(change>=0?'+':'')+change.toFixed(1)+'%';const comparison=interval==='24h'?'previous 24 completed hours':'previous completed candle';return `<span class="trend ${kind}" title="${interval} ${comparison}: ${compact(previous)} coins">${ICONS[kind]}${interval} ${compact(volume)} · ${percent}</span>`}
+function candleProgress(item){
+  const scale='<div class="candle-scale"><span>25</span><span>50</span><span>75</span><span>100%</span></div>';
+  const lines=['24h','1h','30m'].map(period=>{
+    const current=item.currentVolumes?.[period],previous=item.previousVolumes?.[period];
+    const valid=Number.isFinite(current)&&current>=0&&Number.isFinite(previous)&&previous>0;
+    const raw=valid?current/previous*100:0;
+    const percent=valid?Math.min(99,Math.max(0,raw)):0;
+    return `<div class="candle-line" title="${period}: ${volumeNumber(current)} ${item.coin} traded so far; reference ${volumeNumber(previous)} ${item.coin} in the strongest recent completed equal period (${percent.toFixed(1)}% of reference)"><span>${period}</span><span class="candle-track" role="progressbar" aria-label="${period} volume: ${volumeNumber(current)} ${item.coin}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${percent.toFixed(1)}"><span class="candle-fill" style="width:${percent}%"></span></span><span class="candle-value" title="${volumeNumber(current)} ${item.coin}">${compact(current)}</span></div>`;
+  });return `<div class="candle-progress">${lines.join('')}${scale}</div>`;
+}
+function periodVolumes(candles,interval='1h'){
+  const current={},previous={},hour=3600000;
+  const frames=interval==='30m'?[['30m',.5,1,24]]:[['1h',1,1,24],['24h',24,24,3]];
+  for(const [label,hours,barsPerPeriod,lookback] of frames){
+    const block=hours*hour,start=Math.floor(Date.now()/block)*block;
+    const present=candles.filter(c=>Number(c[0])>=start&&Number(c[0])<start+block);
+    const sum=bars=>bars.reduce((value,c)=>value+Number(c[5]),0);
+    current[label]=present.length&&present.every(c=>Number.isFinite(Number(c[5])))?sum(present):null;
+    const baselines=[];
+    for(let n=1;n<=lookback;n++){
+      const from=start-n*block,prior=candles.filter(c=>Number(c[0])>=from&&Number(c[0])<from+block);
+      if(prior.length===barsPerPeriod&&prior.every(c=>Number.isFinite(Number(c[5]))))baselines.push(sum(prior));
+    }
+    previous[label]=baselines.length?Math.max(...baselines):null;
+  }
+  return {current,previous};
+}
+function marketBadge(item,interval){
+  const key=interval==='24h'?'1d':interval;
+  const price=item['price'+key],previousPrice=item['previousPrice'+key];
+  const currentRsi=item[key],previousRsi=item['previous'+key];
+  if(![price,previousPrice,currentRsi,previousRsi].every(Number.isFinite))return `<span class="trend flat">${interval} —</span>`;
+  const priceChange=previousPrice===0?0:(price-previousPrice)/previousPrice*100;
+  const rsiChange=currentRsi-previousRsi;
+  const kind=priceChange>0&&rsiChange>0.05?'up':priceChange<0&&rsiChange< -0.05?'down':'flat';
+  const label=kind==='up'?'Bullish':kind==='down'?'Down':'Mixed';
+  return `<span class="trend ${kind}" title="${interval} price ${priceChange>=0?'+':''}${priceChange.toFixed(2)}%; RSI ${rsiChange>=0?'+':''}${rsiChange.toFixed(2)}">${ICONS[kind]}${interval} ${label}</span>`;
+}
+function priceChart(candles,hours){
+  if(!Array.isArray(candles)||candles.length<2)return '<span class="pair">Unavailable</span>';
+  const bars=candles.map(c=>[Number(c[1]),Number(c[2]),Number(c[3]),Number(c[4])]);
+  if(bars.some(c=>c.some(v=>!Number.isFinite(v))))return '<span class="pair">Unavailable</span>';
+  const low=Math.min(...bars.map(c=>c[2])),high=Math.max(...bars.map(c=>c[1])),span=high-low||1;
+  const y=v=>39-(v-low)*34/span,step=134/bars.length,body=Math.max(1,Math.min(4,step*.65));
+  const marks=bars.map(([open,hi,lo,close],i)=>{const x=2+(i+.5)*step,color=close>=open?'#7ce3b8':'#ffaaa9',top=Math.min(y(open),y(close)),height=Math.max(1,Math.abs(y(open)-y(close)));return `<line x1="${x.toFixed(1)}" y1="${y(hi).toFixed(1)}" x2="${x.toFixed(1)}" y2="${y(lo).toFixed(1)}" stroke="${color}" stroke-width="1"/><rect x="${(x-body/2).toFixed(1)}" y="${top.toFixed(1)}" width="${body.toFixed(1)}" height="${height.toFixed(1)}" fill="${color}"/>`}).join('');
+  const change=bars[0][0]===0?0:(bars.at(-1)[3]-bars[0][0])/bars[0][0]*100;
+  const kind=change>0?'gain':change<0?'loss':'unchanged',label=`${hours}-hour candlestick chart ${change>=0?'+':''}${change.toFixed(2)}%`;
+  return `<div class="spark" title="${label}"><svg viewBox="0 0 138 42" role="img" aria-label="${label}">${marks}</svg><span class="spark-label ${kind}">${change>0?'▲':change<0?'▼':'→'} ${change>=0?'+':''}${change.toFixed(2)}%</span></div>`;
+}
+function render(){
+  const c=criteria();if(!c){status.textContent='Enter a valid RSI range between 0 and 100';return}
+  const filtered=[...readings.values()].filter(x=>matches(x,c));
+  const seen=new Set(visibleOrder);
+  for(const item of filtered)if(!seen.has(item.symbol)){visibleOrder.push(item.symbol);seen.add(item.symbol)}
+  const positions=new Map(visibleOrder.map((symbol,index)=>[symbol,index]));
+  filtered.sort((a,b)=>positions.get(a.symbol)-positions.get(b.symbol));
+  const scrollBox=rows.closest('.card'),previousTop=scrollBox.scrollTop,previousLeft=scrollBox.scrollLeft;rows.replaceChildren();const frag=document.createDocumentFragment();
+  for(const item of filtered){const tr=document.createElement('tr');tr.dataset.symbol=item.symbol;tr.innerHTML=`<td><div class="coin-cell"><span class="coin-icon"></span><div><span class="coin"></span><span class="pair"></span></div></div><button type="button" class="refresh-coin">↻ Refresh</button><a class="view-coin" target="_blank" rel="noopener noreferrer">↗ View</a></td><td class="price">${priceText(item.price)}</td><td>${priceChart(item.threeDayPrices,72)}</td><td>${priceChart(item.dayPrices,24)}</td><td>${badge(item['1d'])}</td><td>${badge(item['1h'])}</td><td>${badge(item['30m'])}</td><td><div class="direction">${trendBadge(item,'1d')}${trendBadge(item,'1h')}${trendBadge(item,'30m')}</div></td><td><div class="direction">${marketBadge(item,'24h')}${marketBadge(item,'1h')}${marketBadge(item,'30m')}</div></td><td><div class="volume">${volumeBadge(item,'24h')}${volumeBadge(item,'1h')}${volumeBadge(item,'30m')}</div></td><td>${candleProgress(item)}</td><td class="pair"></td>`;tr.querySelector('.view-coin').href='https://www.tradingview.com/chart/?symbol='+encodeURIComponent('KUCOIN:'+item.symbol.replace(/USDT$/,'USDT'));tr.querySelector('.view-coin').setAttribute('aria-label','View '+item.symbol+' on TradingView');tr.querySelector('.refresh-coin').dataset.symbol=item.symbol;tr.querySelector('.refresh-coin').disabled=refreshing.has(item.symbol);tr.querySelector('.refresh-coin').textContent=refreshing.has(item.symbol)?'↻ Refreshing…':'↻ Refresh';tr.querySelector('.coin-icon').textContent=item.coin.slice(0,1);tr.querySelector('.coin').textContent=item.coin;tr.querySelector('.pair').textContent=item.symbol;tr.lastElementChild.textContent=item.time;frag.appendChild(tr)}
+  if(!filtered.length){const tr=document.createElement('tr');tr.innerHTML='<td colspan="12" class="empty"></td>';tr.firstElementChild.textContent=scanning?'Scanning… no matches yet.':readings.size?'No coins match this RSI range.':'Waiting for scan…';frag.appendChild(tr)}
+  rows.appendChild(frag);scrollBox.scrollTop=previousTop;scrollBox.scrollLeft=previousLeft;summary.textContent=`${filtered.length} matching · ${readings.size} checked`;
+}
+function queueRender(){if(drawTimer)return;drawTimer=setTimeout(()=>{drawTimer=null;render()},250)}
+async function pacedFetch(url,signal){
+  const wait=Math.max(0,nextPermit-Date.now());nextPermit=Date.now()+wait+180;if(wait)await sleep(wait);
+  if(signal.aborted)throw new DOMException('Stopped','AbortError');
+  const response=await fetch(url,{signal});
+  if(response.status===429||response.status===418)throw Error('Rate limited by KuCoin. Wait before starting another scan.');
+  if(!response.ok)throw Error('HTTP '+response.status);
+  return response.json();
+}
+async function getRsi(symbol,interval,signal){const kuInterval=interval==='1h'?'1hour':interval==='30m'?'30min':'1day';const u=new URL(ROOT+'market/candles');u.search=new URLSearchParams({symbol:symbol.replace(/USDT$/,'-USDT'),type:kuInterval});const raw=await pacedFetch(u,signal);if(raw.code!=='200000'||!Array.isArray(raw.data))throw Error(raw.msg||'KuCoin candle request failed');const candles=raw.data.slice().reverse().map(c=>[Number(c[0])*1000,Number(c[1]),Number(c[3]),Number(c[4]),Number(c[2]),Number(c[5])]);if(!Array.isArray(candles)||candles.length<16)throw Error('Unexpected candle data');const closes=candles.map(c=>Number(c[4]));const sumVolume=bars=>bars.reduce((total,bar)=>total+Number(bar[5]),0);const periods=interval==='1h'||interval==='30m'?periodVolumes(candles,interval):null;const highLow=bars=>bars.length&&bars.every(bar=>Number.isFinite(Number(bar[2]))&&Number.isFinite(Number(bar[3])))?{upper:Math.max(...bars.map(bar=>Number(bar[2]))),lower:Math.min(...bars.map(bar=>Number(bar[3])))}:null;return {periods,value:rsi(closes),previous:rsi(closes.slice(0,-1)),price:Number(candles.at(-1)[4]),previousPrice:Number(candles.at(-2)[4]),volume:Number(candles.at(-2)[5]),olderVolume:Number(candles.at(-3)[5]),volume12h:interval==='1h'&&candles.length>=25?sumVolume(candles.slice(-13,-1)):null,olderVolume12h:interval==='1h'&&candles.length>=25?sumVolume(candles.slice(-25,-13)):null,volume24h:interval==='1h'&&candles.length>=49?sumVolume(candles.slice(-25,-1)):null,olderVolume24h:interval==='1h'&&candles.length>=49?sumVolume(candles.slice(-49,-25)):null,dayPrices:interval==='1h'&&candles.length>=24?candles.slice(-24):null,threeDayPrices:interval==='1h'&&candles.length>=72?candles.slice(-72):null,levels12h:interval==='1h'&&candles.length>=13?highLow(candles.slice(-13,-1)):null,levels1h:interval==='1h'&&candles.length>=2?highLow(candles.slice(-2,-1)):null}}
+async function scan(){
+  if(scanning)return;const c=criteria();if(!c){render();return}
+  scanning=true;autoVolumeStopped=false;volumeController.abort();volumeController=new AbortController();controller=new AbortController();const signal=controller.signal;readings.clear();visibleOrder=[];render();$('scan').disabled=true;$('stop').disabled=false;$('progress').style.width='0%';status.textContent='Discovering active USDT pairs…';let done=0,failed=0,rateLimited=false;
+  try{
+    const response=await fetch(ROOT+'market/allTickers',{signal});if(!response.ok)throw Error('Could not load KuCoin symbols (HTTP '+response.status+')');
+    const data=await response.json();if(data.code!=='200000'||!Array.isArray(data.data?.ticker))throw Error(data.msg||'Unexpected KuCoin ticker response');const pairs=data.data.ticker.filter(t=>t.symbol.endsWith('-USDT')).map(t=>({baseAsset:t.symbol.slice(0,-5),symbol:t.symbol.replace('-',''),kuSymbol:t.symbol}));
+    if(!pairs.length)throw Error('No active USDT pairs returned');
+    let cursor=0;
+    async function worker(){while(cursor<pairs.length&&!signal.aborted){const pair=pairs[cursor++];const item={coin:pair.baseAsset,symbol:pair.symbol,time:'—',price:null,dayPrices:null,threeDayPrices:null,levels12h:null,levels1h:null,volume12h:null,olderVolume12h:null,volume24h:null,olderVolume24h:null,'1d':null,'30m':null,'1h':null,'previous30m':null,'previous1h':null,'price30m':null,'price1h':null,'previousPrice30m':null,'previousPrice1h':null,currentVolumes:null,previousVolumes:null,'volume30m':null,'volume1h':null,'olderVolume30m':null,'olderVolume1h':null};
+      for(const interval of ['1h','30m','1d']){try{const result=await getRsi(pair.symbol,interval,signal);item[interval]=result.value;item['previous'+interval]=result.previous;if(interval==='1d'){item.price1d=result.price;item.previousPrice1d=result.previousPrice;continue}item['price'+interval]=result.price;item['previousPrice'+interval]=result.previousPrice;item['volume'+interval]=result.volume;item['olderVolume'+interval]=result.olderVolume;if(interval==='1h'){item.currentVolumes=result.periods?.current;item.previousVolumes=result.periods?.previous;item.volume12h=result.volume12h;item.olderVolume12h=result.olderVolume12h;item.volume24h=result.volume24h;item.olderVolume24h=result.olderVolume24h;item.dayPrices=result.dayPrices;item.threeDayPrices=result.threeDayPrices;item.levels12h=result.levels12h;item.levels1h=result.levels1h}if(interval==='30m'){item.currentVolumes={...item.currentVolumes,...result.periods?.current};item.previousVolumes={...item.previousVolumes,...result.periods?.previous}}if(interval==='30m'||!Number.isFinite(item.price))item.price=result.price}catch(e){if(signal.aborted)return;failed++;if(/Rate limited/.test(e.message)){rateLimited=true;controller.abort();return}}}
+      item.time=new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});readings.set(pair.symbol,item);done++;$('progress').style.width=(100*done/pairs.length).toFixed(1)+'%';status.textContent=`Scanning ${done} of ${pairs.length} pairs…`;queueRender();
+    }}
+    await Promise.all(Array.from({length:4},worker));
+    if(rateLimited)status.textContent=`Stopped after ${done} pairs: KuCoin rate limit reached. Wait and scan again.`;
+    else if(signal.aborted)status.textContent=`Stopped after ${done} of ${pairs.length} pairs.`;
+    else status.textContent=`Scan complete: ${done} pairs checked${failed?' · '+failed+' RSI requests unavailable':''}.`;
+  }catch(e){status.textContent=signal.aborted?'Scan stopped.':'Scan failed: '+e.message}
+  finally{scanning=false;controller=null;$('scan').disabled=false;$('stop').disabled=autoVolumeStopped;render()}
+}
+async function refreshVisibleVolume(){
+  if(scanning||autoVolumeStopped||autoVolumeBusy||document.hidden)return;
+  const visible=[...rows.querySelectorAll('tr[data-symbol]')].filter(row=>{
+    const rect=row.getBoundingClientRect();return rect.bottom>0&&rect.top<window.innerHeight;
+  }).slice(0,12);
+  if(!visible.length)return;
+  autoVolumeBusy=true;const signal=volumeController.signal;
+  try{
+    for(const row of visible){
+      if(signal.aborted||autoVolumeStopped||scanning)break;
+      const symbol=row.dataset.symbol,item=readings.get(symbol);
+      if(!item||refreshing.has(symbol))continue;
+      try{
+        const url=new URL(ROOT+'market/candles');url.search=new URLSearchParams({symbol:symbol.replace(/USDT$/,'-USDT'),type:'1hour'});
+        const raw=await pacedFetch(url,signal);if(raw.code!=='200000'||!Array.isArray(raw.data))throw Error(raw.msg||'KuCoin candles unavailable');const candles=raw.data.slice().reverse().map(c=>[Number(c[0])*1000,Number(c[1]),Number(c[3]),Number(c[4]),Number(c[2]),Number(c[5])]),periods=periodVolumes(candles,'1h');
+        const halfUrl=new URL(ROOT+'market/candles');halfUrl.search=new URLSearchParams({symbol:symbol.replace(/USDT$/,'-USDT'),type:'30min'});
+        const halfRaw=await pacedFetch(halfUrl,signal);if(halfRaw.code!=='200000'||!Array.isArray(halfRaw.data))throw Error(halfRaw.msg||'KuCoin candles unavailable');const halfCandles=halfRaw.data.slice().reverse().map(c=>[Number(c[0])*1000,Number(c[1]),Number(c[3]),Number(c[4]),Number(c[2]),Number(c[5])]),halfPeriods=periodVolumes(halfCandles,'30m');
+        if(signal.aborted||readings.get(symbol)!==item)break;
+        item.currentVolumes={...periods.current,...halfPeriods.current};item.previousVolumes={...periods.previous,...halfPeriods.previous};
+        const currentRow=[...rows.querySelectorAll('tr[data-symbol]')].find(r=>r.dataset.symbol===symbol);
+        if(currentRow)currentRow.querySelector('.candle-progress').outerHTML=candleProgress(item);
+      }catch(e){if(signal.aborted)break;if(/Rate limited/.test(e.message)){autoVolumeStopped=true;$('stop').disabled=true;status.textContent='Volume updates paused: KuCoin rate limit reached.';break}}
+    }
+  }finally{autoVolumeBusy=false}
+}
+async function refreshCoin(symbol){
+  const item=readings.get(symbol);if(!item||refreshing.has(symbol))return;
+  const refreshController=new AbortController();refreshControllers.set(symbol,refreshController);refreshing.add(symbol);render();
+  try{
+    const updates={};
+    for(const interval of ['1h','30m','1d']){
+      const result=await getRsi(symbol,interval,refreshController.signal);
+      updates[interval]=result.value;updates['previous'+interval]=result.previous;
+      if(interval==='1d'){updates.price1d=result.price;updates.previousPrice1d=result.previousPrice;continue}
+      updates['price'+interval]=result.price;updates['previousPrice'+interval]=result.previousPrice;
+      updates['volume'+interval]=result.volume;updates['olderVolume'+interval]=result.olderVolume;
+      if(interval==='30m'){updates.currentVolumes={...updates.currentVolumes,...result.periods?.current};updates.previousVolumes={...updates.previousVolumes,...result.periods?.previous}}
+      if(interval==='1h')Object.assign(updates,{currentVolumes:result.periods?.current,previousVolumes:result.periods?.previous,volume12h:result.volume12h,olderVolume12h:result.olderVolume12h,volume24h:result.volume24h,olderVolume24h:result.olderVolume24h,dayPrices:result.dayPrices,threeDayPrices:result.threeDayPrices});
+    }
+    updates.price=updates.price30m;updates.time=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    if(readings.get(symbol)===item)Object.assign(item,updates);
+    status.textContent=`${item.coin} refreshed at ${updates.time}.`;
+  }catch(e){if(!refreshController.signal.aborted)status.textContent=`Could not refresh ${item.coin}: ${e.message}`}
+  finally{refreshing.delete(symbol);refreshControllers.delete(symbol);render()}
+}
+rows.addEventListener('click',e=>{const button=e.target.closest('.refresh-coin');if(button){button.blur();refreshCoin(button.dataset.symbol)}});
+$('scan').onclick=scan;$('stop').onclick=()=>{autoVolumeStopped=true;volumeController.abort();controller?.abort();$('stop').disabled=true;if(!scanning)status.textContent='Automatic volume updates paused. Coin Refresh still works.'};
+
+for(const id of ['minimum','maximum','match'])$(id).addEventListener('input',render);
+for(const button of document.querySelectorAll('.sort'))button.onclick=()=>{const field=button.dataset.sort;descending=order===field?!descending:true;order=field;const active=[...readings.values()].filter(item=>matches(item,criteria()));active.sort((a,b)=>field==='coin'?a.coin.localeCompare(b.coin):((a[field]??-1)-(b[field]??-1))*(descending?-1:1));const sorted=new Set(active.map(item=>item.symbol));visibleOrder=[...active.map(item=>item.symbol),...visibleOrder.filter(symbol=>!sorted.has(symbol))];render()};
+render();scan();setInterval(refreshVisibleVolume,30000);
+</script>
+</body></html>
